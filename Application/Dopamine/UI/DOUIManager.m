@@ -210,11 +210,11 @@
     if (!self.logView)
         return;
     
+    [self.logRecord addObject:log];
+
     BOOL isDebug = self.logView.class == DODebugLogView.class;
     if (debug && !isDebug)
         return;
-    
-    [self.logRecord addObject:log];
     
     if (update) {
         if ([self.logView respondsToSelector:@selector(updateLog:)]) {
@@ -231,13 +231,15 @@
     [self sendLog:log debug:debug update:NO];
 }
 
-- (void)shareLogRecord
+- (void)shareLogRecordFromView:(UIView *)sourceView
 {
     if (self.logRecord.count == 0)
         return;
 
     NSString *log = [self.logRecord componentsJoinedByString:@"\n"];
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[log] applicationActivities:nil];
+    activityViewController.popoverPresentationController.sourceView = sourceView;
+    activityViewController.popoverPresentationController.sourceRect = sourceView.bounds;
     [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:activityViewController animated:YES completion:nil];
 }
 
